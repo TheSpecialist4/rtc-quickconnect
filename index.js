@@ -773,7 +773,7 @@ module.exports = function (signalhost, opts) {
     return signaller;
   };
 
-  signaller.restartIce = function (targetPeerId) {
+  signaller.restartIceWith = function (targetPeerId) {
     if (signaller.isMaster(targetPeerId)) {
       // let master perform ICE restart
       return;
