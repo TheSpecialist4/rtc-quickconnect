@@ -773,6 +773,27 @@ module.exports = function (signalhost, opts) {
     return signaller;
   };
 
+  signaller.restartIce = function (targetPeerId) {
+    if (signaller.isMaster(targetPeerId)) {
+      // let master perform ICE restart
+      return;
+    }
+
+    const callId = calls.keys().find(peerId => peerId === targetPeerId);
+
+    if (!callId) {
+      return debug(`Attempted to restart ICE for target ${targetPeerId} but no peer found`);
+    }
+
+    const call = calls.get(callId);
+
+    if (!call || !call.pc || !call.pc.restartIce) {
+      return debug(`No valid PeerConnection found or restartIce not supported for target ${targetPeerId}`);
+    }
+    signaller('log', 'ICE restart');
+    return call.pc.restartIce();
+  };
+
   /**
     #### join()
 
