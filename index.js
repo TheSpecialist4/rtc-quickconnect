@@ -776,22 +776,26 @@ module.exports = function (signalhost, opts) {
   signaller.restartIceWith = function (targetPeerId) {
     if (signaller.isMaster(targetPeerId)) {
       // let master perform ICE restart
-      return;
+      return signaller;
     }
 
     const callId = calls.keys().find(peerId => peerId === targetPeerId);
 
     if (!callId) {
-      return debug(`Attempted to restart ICE for target ${targetPeerId} but no peer found`);
+      debug(`Attempted to restart ICE for target ${targetPeerId} but no peer found`);
+      return signaller;
     }
 
     const call = calls.get(callId);
 
     if (!call || !call.pc || !call.pc.restartIce) {
-      return debug(`No valid PeerConnection found or restartIce not supported for target ${targetPeerId}`);
+      debug(`No valid PeerConnection found or restartIce not supported for target ${targetPeerId}`);
+      return signaller;
     }
     signaller('log', 'ICE restart');
-    return call.pc.restartIce();
+    call.pc.restartIce();
+
+    return signaller;
   };
 
   /**
